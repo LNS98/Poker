@@ -1,0 +1,2 @@
+# Poker
+Simplified Poker game
