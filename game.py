@@ -158,7 +158,7 @@ class Game:
         # check each player against each other player
         best_player = None
         best_score = 0
-        for player in self.player_order:
+        for player in self.players_in_round:
 
             # evalaute player1 cards
             player_tot = player.tot_hand(self.board.cards)
@@ -175,7 +175,7 @@ class Game:
         for i in range(2):
             for player in self.player_order:
                 player.add_card(self.deck.deal())
-                player.disp_hand()
+                # player.disp_hand()
 
 
     def bet_round(self):
@@ -187,7 +187,8 @@ class Game:
             player = self.players_in_round[i]
 
             # display the cards as the player moves
-            # print("\n"*100)
+            print("\n"*100)
+            player.disp_hand()
             self.board.disp_cards() # don't show this preflop
             print("Pot size:", self.board.pot)
             # get the bet of the player
@@ -238,8 +239,8 @@ class Game:
         # change order of players as on board and get a new deck
         new_order = [self.player_order[(i+1)%len(self.player_order)] for i in range(len(self.player_order))]
 
-        self.players_in_round = new_order
         self.player_order = new_order
+        self.players_in_round = new_order.copy()
         # reset the board
         self.board.new_turn(self.player_order)
 
@@ -249,6 +250,8 @@ class Game:
         # disp the winning annd current state of each player
         for player in self.player_order:
             print("{} has {} chips".format(player.player_name, player.tot_money))
+
+        cont = input("Press anything to continue")
 
     def play(self):
 
@@ -268,8 +271,10 @@ class Game:
             # show hands and determine winner
             print("\n"*100)
             self.board.disp_cards()
-            for player in self.player_order:
-                print("{}'s Hand:".format(player.player_name), [str(card) for card in player.hand])
+            # only display if more than 1 players has reached the end
+            if len(self.players_in_round) > 1:
+                for player in self.players_in_round:
+                    print("{}'s Hand:".format(player.player_name), [str(card) for card in player.hand])
 
             winner = self.find_winner() # turn winner
             print("Winner is", winner.player_name)
@@ -285,44 +290,8 @@ class Game:
 if __name__ == "__main__":
 
 
-    # ------------- Test ------------------
-
-    # lst_players = [Player("Francesco", 100), Player("Lapo", 100)]
-    #
-    # bj = Game(10, lst_players)
-
-    # bj.add_player(Player("Emma", 100))
-    # bj.add_player(Player("Emanuela", 100))
-
-    # bj.deck.shuffle()
-    #
-    # bj.deal_cards()
-    # bj.turn_cards(5)
-    # bj.evaluate_hands()
-
-
-
-    # ----------- Poker Game ----------------
-
     lst_players = [Player("Emma", 100), Player("Lorenzo", 100)]
 
     poker = Game(10, lst_players)
 
     poker.play()
-
-    #
-    # # bj.add_player(Player("Emma", 100))
-    # # bj.add_player(Player("Emanuela", 100))
-    #
-    # bj.deck.shuffle()
-    #
-    # bj.deal_cards()
-    # bj.bet_round()
-    # bj.turn_cards(3)
-    # bj.bet_round()
-    # bj.turn_cards(1)
-    # bj.bet_round()
-    # bj.turn_cards(1)
-    # bj.bet_round()
-    #
-    # print(bj.board.pot)

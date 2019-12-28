@@ -1,6 +1,71 @@
-
-
-
+# class Player:
+#
+#
+#     def __init__(self, player_name, intial_bank):
+#         self.player_name = player_name
+#         self.hand = []
+#         self.tot_money = intial_bank
+#         self.curr_bet_size = 0
+#         self.has_folded = False
+#
+#     def add_card(self, card):
+#         self.hand.append(card)
+#
+#
+#     def _make_bet(self, bet_amount, min_bet):
+#
+#         # allowed to bet
+#         if self.tot_money - bet_amount >= 0 and bet_amount >= min_bet:
+#             self.tot_money -= bet_amount
+#             # make a class attribute to store current bet size
+#             self.curr_bet_size = bet_amount
+#             return True
+#         else:
+#             print("Bet size to big or under the minimum")
+#             print("Min bet size: {}".format(min_bet))
+#             print("Your total chips is {}".format(self.tot_money))
+#             return False
+#
+#     def _make_call(self, bet_amount, min_bet):
+#
+#         # allowed to bet
+#         if self.tot_money - bet_amount >= 0 and bet_amount >= min_bet:
+#             self.tot_money -= bet_amount
+#             # make a class attribute to store current bet size
+#             self.curr_bet_size = bet_amount
+#             return True
+#         else:
+#             print("Bet size to big or under the minimum")
+#             print("Min bet size: {}".format(min_bet))
+#             print("Your total chips is {}".format(self.tot_money))
+#             return False
+#
+#
+#     def tot_hand(self, board_cards):
+#
+#         # create a 13x4 array with all 0s
+#         cards_array = [[0 for i in range(13)] for i in range(4)]
+#         all_cards = board_cards + self.hand
+#
+#         # fill the scores array
+#         for card in all_cards:
+#             row, col = card.numeric_value()-2, card.suite_value()
+#             cards_array[col][row] += 1
+#
+#         same_card = [sum(cards_array[j][i] for j in range(4)) for i in range(13)]
+#
+#         # get an estimate of stregnth of the card
+#         value = sum(10*(same_card[i])**3 + (same_card[i])*i for i in range(len(same_card)))
+#
+#         return value
+#
+#
+#     def _reset_hand(self):
+#         self.hand = []
+#         self.has_folded = False
+#         self.curr_bet_size = 0
+#
+#
 
 
 class Player:
@@ -40,8 +105,11 @@ class Player:
                     bet_amount = 0
 
                 elif move == "bet":
-                    bet_amount = float(input("How much would you like to bet?"))
-                    valid_move = self._make_bet(bet_amount, min_bet)
+                    try:
+                        bet_amount = float(input("How much would you like to bet?"))
+                        valid_move = self._make_bet(bet_amount, min_bet)
+                    except:
+                        print("Must type an number")
 
                 else:
                     print("The move selected is not valid")
@@ -60,9 +128,11 @@ class Player:
                     valid_move = self._make_bet(bet_amount, min_bet)
 
                 elif move == "raise":
-                    bet_amount = float(input("How much would you like to raise?"))
-                    valid_move = self._make_bet(bet_amount, highest_raise + min_bet)
-
+                    try:
+                        bet_amount = float(input("How much would you like to raise?"))
+                        valid_move = self._make_bet(bet_amount, highest_raise + min_bet)
+                    except:
+                        print("Must type an number")
 
                 else:
                     print("The move selected is not valid")
@@ -117,14 +187,6 @@ class Player:
         value = sum(10*(same_card[i])**3 + (same_card[i])*i for i in range(len(same_card)))
 
         return value
-
-        # same_card = same_card[::-1] # invert the array
-        # # get the argmax
-        # max_same_card = max(same_card)
-        # argmax = same_card.index(max_same_card)
-        #
-        # # convert to actual value
-        # # max_value = (max_same_card, len(same_card) - argmax + 1)
 
 
     def _reset_hand(self):
