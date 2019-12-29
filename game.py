@@ -8,7 +8,7 @@ ValueError if the deck does not have all the cards, otherwise returns the cards 
 
 import random
 random.seed(7)
-from player import Player
+from player_ai import Player, PlayerHuman, PlayerRandom
 
 class Deck:
 
@@ -84,13 +84,6 @@ class Board:
         self.order_players.append(player)
         self.bet_round[player] = 0
 
-    def remove_player_from_board(self, player):
-        try:
-            indx_player = self.order_players.index(player)
-            del self.player_order[indx_player]
-        except:
-            print("The player named is not playing")
-
     def new_turn(self, players):
 
         self.cards = []
@@ -112,6 +105,13 @@ class Board:
         # get the player index
         self.bet_round[player] += bet_size
         self.pot += bet_size
+
+        # if one player is all in
+
+            # create another bot between players which are not all in
+
+            # add to this pot 
+
 
     def _add_cards(self, card):
 
@@ -146,7 +146,7 @@ class Game:
             indx_player = self.player_order.index(player)
             del self.player_order[indx_player]
             self.tot_players -= 1
-            self.board.remove_player_from_board(player)
+            print("{} is not playing anymore".format(player.player_name))
         except:
             print("The player named is not playing")
 
@@ -182,26 +182,36 @@ class Game:
 
         i = 0
         j = 0
+        bet = None
         while True:
 
             player = self.players_in_round[i]
 
-            # display the cards as the player moves
-            print("\n"*100)
-            player.disp_hand()
-            self.board.disp_cards() # don't show this preflop
-            print("Pot size:", self.board.pot)
-            # get the bet of the player
-            bet = player.make_move(max(self.board.bet_round.values()), self.min_bet)
-            # check if a bet has been made, if so re-set j
-            if bet > max(self.board.bet_round.values()):
-                j = 0
+            # check if the player is all in, if so skip as he can't do anything
+            if player.tot_money != 0:
 
-            self.board._add_bet(player, bet)
+                # display the cards as the player moves
+                print("\n"*100)
+                player.disp_hand()
+                self.board.disp_cards() # don't show this preflop
+                print("Your Chip amount:", player.tot_money)
+                print("Pot size:", self.board.pot)
+                if bet != None:
+                    print("previous bet: {}".format(bet))
 
-            # check if the player has folded, if so remove him
-            if player.has_folded:
-                del self.players_in_round[i]
+                # get the bet of the player
+                bet = player.make_move(max(self.board.bet_round.values()), self.min_bet)
+                # check if a bet has been made, if so re-set j
+                if bet > max(self.board.bet_round.values()):
+                    j = 0
+
+                self.board._add_bet(player, bet)
+
+                # check if the player has folded, if so remove him
+                if player.has_folded:
+                    del self.players_in_round[i]
+                    i -= 1
+                    j -= 1
 
 
             # incerease the counter
@@ -290,7 +300,7 @@ class Game:
 if __name__ == "__main__":
 
 
-    lst_players = [Player("Emma", 100), Player("Lorenzo", 100)]
+    lst_players = [PlayerHuman("Emma", 100), PlayerHuman("Lapo", 100), PlayerHuman("Emanuela", 100)]
 
     poker = Game(10, lst_players)
 
